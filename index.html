@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Java Comeback // Mission Control</title>
+<style>
+:root{--bg:#0a0e17;--panel:#111b2e;--grid:#1f2a44;--cyan:#00e5ff;--green:#39ff14;--mag:#ff2bd6;--amber:#ffb300;--red:#ff3b3b;--text:#e6f1ff;--dim:#6b7a99;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+body{max-width:720px;margin:0 auto;padding:16px 14px 40px}
+h1{margin:6px 0 2px;font-size:20px;letter-spacing:1px;color:var(--cyan)}
+.sub{font-size:10px;color:var(--dim);letter-spacing:1px}
+.hero{display:flex;align-items:center;gap:18px;margin:16px 0;padding:14px;background:var(--panel);border:1px solid var(--grid);border-radius:10px}
+.ring{position:relative;width:128px;height:128px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring .pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--green)}
+.ring .pct small{font-size:8px;color:var(--dim);letter-spacing:1px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1}
+.st{background:var(--bg);border-top:2px solid var(--c);padding:6px 8px;border-radius:4px}
+.st b{display:block;font-size:22px;color:var(--c)}.st span{font-size:8px;color:var(--dim);letter-spacing:1px}
+.bar{height:10px;background:var(--grid);border-radius:5px;overflow:hidden;margin:-4px 0 14px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--green));transition:width .4s}
+.row{background:var(--panel);border-bottom:1px solid var(--grid);padding:8px 10px;display:grid;grid-template-columns:34px 1fr auto;gap:4px 10px;align-items:center}
+.row.sun{opacity:.55}.row.test .f{color:var(--mag)}
+.n{font-weight:700;color:var(--cyan);font-size:13px}.d{font-size:12px}.d span{color:var(--dim);font-size:10px;display:block}
+.ctl{display:flex;gap:6px;align-items:center}
+button{font:inherit;cursor:pointer;border-radius:5px;border:1px solid var(--grid);background:var(--bg);color:var(--dim);font-size:11px;font-weight:700;padding:7px 8px;min-width:34px}
+.s{min-width:74px;letter-spacing:.5px}.s.D{background:#0b3d2e;color:var(--green);border-color:var(--green)}.s.P{background:#3d2e0b;color:var(--amber);border-color:var(--amber)}.s.M{background:#3d0b14;color:var(--red);border-color:var(--red)}.s.R{background:#14203a;color:var(--dim);cursor:default}
+.t.on{background:#08323a;color:var(--cyan);border-color:var(--cyan)}
+input{grid-column:2/4;width:100%;background:var(--bg);border:1px solid var(--grid);color:var(--text);border-radius:4px;padding:6px 8px;font:inherit;font-size:11px}
+.legend{font-size:10px;color:var(--dim);margin:0 0 10px;line-height:1.5}
+.foot{margin-top:14px;font-size:10px;color:var(--dim)}
+.auth{margin:14px 0;padding:12px;background:var(--panel);border:1px solid var(--grid);border-radius:8px}.auth h2{margin:0 0 8px;font-size:13px;color:var(--cyan)}.auth .authrow{display:flex;gap:8px;flex-wrap:wrap}.auth input{flex:1;min-width:130px;grid-column:auto;font-size:12px;padding:9px}.auth button{padding:9px 12px;color:var(--cyan);border-color:var(--cyan)}.auth button.secondary{color:var(--dim);border-color:var(--grid)}.auth small{display:block;margin-top:8px;color:var(--dim);font-size:10px}.auth #authMessage{color:var(--amber)}
+</style></head><body>
+<h1>◢ JAVA COMEBACK // MISSION CONTROL ◣</h1>
+<div class="sub">DAY 1 = 11 NOV 2026 · 3 HRS/DAY · SUNDAY = REST</div>
+<section class="auth" id="authPanel">
+ <h2>ACCOUNT SYNC</h2>
+ <div class="authrow" id="authForm">
+  <input id="email" type="email" placeholder="Email address" autocomplete="username">
+  <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+  <button id="signIn">LOG IN</button><button id="signUp" class="secondary">CREATE ACCOUNT</button>
+ </div>
+ <div class="authrow" id="signedIn" hidden><span id="accountEmail"></span><button id="signOut" class="secondary">LOG OUT</button></div>
+ <small id="authMessage">Log in with the same account on your laptop and mobile to sync your tracker.</small>
+</section>
+<div class="hero">
+ <div class="ring"><svg width="128" height="128" viewBox="0 0 128 128"><circle cx="64" cy="64" r="54" fill="none" stroke="#1f2a44" stroke-width="12"/><circle id="arc" cx="64" cy="64" r="54" fill="none" stroke="#39ff14" stroke-width="12" stroke-linecap="round" stroke-dasharray="339.3" stroke-dashoffset="339.3" style="transition:stroke-dashoffset .5s"/></svg><div class="pct"><span id="pct">0%</span><small>MISSION COMPLETE</small></div></div>
+ <div class="stats">
+  <div class="st" style="--c:var(--green)"><b id="done">0</b><span>DAYS DONE</span></div>
+  <div class="st" style="--c:var(--red)"><b id="miss">0</b><span>MISSED</span></div>
+  <div class="st" style="--c:var(--amber)"><b id="streak">0</b><span>STREAK</span></div>
+  <div class="st" style="--c:var(--cyan)"><b id="left">0</b><span>DAYS LEFT</span></div>
+ </div>
+</div>
+<div class="bar"><i id="bar"></i></div>
+<p class="legend">Tap the status button to cycle: <b style="color:var(--green)">DONE</b> → <b style="color:var(--amber)">PARTIAL</b> → <b style="color:var(--red)">MISSED</b> → blank. <b style="color:var(--cyan)">P</b> = predicted first, <b style="color:var(--cyan)">O</b> = real output pasted. Only a finished task counts as DONE.</p>
+<div id="list"></div>
+<div class="foot" id="foot">Saving…</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBXD9RcTDkR7QHhkVa7p_BhJCrlp3dGPAo",
+  authDomain: "plan-java.firebaseapp.com",
+  projectId: "plan-java",
+  storageBucket: "plan-java.firebasestorage.app",
+  messagingSenderId: "121882724775",
+  appId: "1:121882724775:web:b1721976a5351d9baa8e82"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const FOCUS=["REST","Arrays + Strings","OOP + equals/hashCode","Collections","Exceptions + File handling","Lambdas + Streams","TEST: fresh task, alone"];
+const WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],MO=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const START=new Date(2026,10,11),N=46,LS="java_mission_v1";
+const days=[...Array(N)].map((_,i)=>{const d=new Date(START);d.setDate(d.getDate()+i);return d});
+const work=days.filter(d=>d.getDay()!==0).length;
+let S={},docRef=null,timer=null,unsubscribe=null,applyingRemote=false,lastCloudJSON=null;
+try{S=JSON.parse(localStorage.getItem(LS)||"{}")}catch(e){S={}}
+const $=id=>document.getElementById(id);
+const NEXT={"":"D",D:"P",P:"M",M:""};
+function render(){
+  const L=$("list");L.innerHTML="";
+  days.forEach((d,i)=>{
+    const sun=d.getDay()===0,e=S[i]||{},st=sun?"R":(e.s||"");
+    const r=document.createElement("div");r.className="row"+(sun?" sun":"")+(d.getDay()===6?" test":"");
+    r.innerHTML=`<div class="n">${i+1}</div><div class="d">${d.getDate()} ${MO[d.getMonth()]} · ${WD[d.getDay()]}<span class="f">${FOCUS[d.getDay()]}</span></div>`;
+    const c=document.createElement("div");c.className="ctl";
+    const b=document.createElement("button");b.className="s "+st;b.textContent={D:"DONE",P:"PARTIAL",M:"MISSED",R:"REST","":"TAP"}[st];
+    if(!sun)b.onclick=()=>{S[i]={...e,s:NEXT[e.s||""]};save();render()};
+    c.appendChild(b);
+    if(!sun)["p","o"].forEach(k=>{const t=document.createElement("button");t.className="t"+(e[k]?" on":"");t.textContent=k.toUpperCase();t.onclick=()=>{S[i]={...e,[k]:e[k]?0:1};save();render()};c.appendChild(t)});
+    r.appendChild(c);
+    if(!sun){const inp=document.createElement("input");inp.placeholder="Mission / notes";inp.value=e.n||"";inp.onchange=()=>{S[i]={...(S[i]||{}),n:inp.value};save()};r.appendChild(inp)}
+    L.appendChild(r);
+  });
+  stats();
+}
+function stats(){
+  let done=0,miss=0,streak=0;
+  days.forEach((d,i)=>{const s=(S[i]||{}).s;if(d.getDay()===0)return;if(s==="D"){done++;streak++}else if(s==="M"){miss++;streak=0}else if(s==="P")streak=0});
+  const p=work?done/work:0;
+  $("done").textContent=done;$("miss").textContent=miss;$("streak").textContent=streak;
+  $("pct").textContent=Math.round(p*100)+"%";$("bar").style.width=p*100+"%";
+  $("arc").style.strokeDashoffset=339.3*(1-p);
+  const end=new Date(2026,11,26),now=new Date();now.setHours(0,0,0,0);
+  $("left").textContent=Math.max(0,Math.round((end-now)/864e5));
+}
+function save(){
+  const raw=JSON.stringify(S);
+  try{localStorage.setItem(LS,raw)}catch(e){}
+  if(applyingRemote)return;
+  clearTimeout(timer);$("foot").textContent="Saved on this device. Syncing…";
+  timer=setTimeout(async()=>{
+    if(!docRef){$("foot").textContent="Saved on this device. Log in to sync across devices.";return}
+    try{await setDoc(docRef,{log:raw,updatedAt:Date.now()});lastCloudJSON=raw;$("foot").textContent="Synced to your account."}
+    catch(err){$("foot").textContent="Cloud sync failed. Your changes remain saved on this device.";console.error(err)}
+  },500);
+}
+function authMessage(msg){$("authMessage").textContent=msg}
+function friendlyError(err){
+ const codes={"auth/invalid-email":"Enter a valid email address.","auth/missing-password":"Enter your password.","auth/weak-password":"Use a password with at least 6 characters.","auth/email-already-in-use":"This email already has an account. Log in instead.","auth/invalid-credential":"Email or password is incorrect.","auth/user-not-found":"No account found. Create an account first.","auth/network-request-failed":"Network problem. Check your internet connection."};
+ return codes[err.code]||err.message||"Something went wrong. Please try again.";
+}
+$("signIn").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);authMessage("Logged in.")}catch(e){authMessage(friendlyError(e))}};
+$("signUp").onclick=async()=>{try{await createUserWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);authMessage("Account created.")}catch(e){authMessage(friendlyError(e))}};
+$("signOut").onclick=async()=>{try{await signOut(auth)}catch(e){authMessage(friendlyError(e))}};
+
+render();$("foot").textContent="Ready. Your entries are saved on this device.";
+onAuthStateChanged(auth,async user=>{
+ if(unsubscribe){unsubscribe();unsubscribe=null}
+ docRef=null;lastCloudJSON=null;
+ $("authForm").hidden=!!user;$("signedIn").hidden=!user;
+ if(!user){$("accountEmail").textContent="";$("foot").textContent="Saved on this device. Log in to sync across devices.";return}
+ $("accountEmail").textContent=user.email||"Logged in";
+ docRef=doc(db,"data","users",user.uid,"log");
+ $("foot").textContent="Connecting to cloud…";
+ try{
+  const snap=await getDoc(docRef);
+  const localRaw=JSON.stringify(S);
+  if(snap.exists()&&snap.data().log){
+   const cloudRaw=snap.data().log;S=JSON.parse(cloudRaw);lastCloudJSON=cloudRaw;
+   try{localStorage.setItem(LS,cloudRaw)}catch(e){}render();
+  }else{
+   await setDoc(docRef,{log:localRaw,updatedAt:Date.now()});lastCloudJSON=localRaw;
+  }
+  unsubscribe=onSnapshot(docRef,snapshot=>{
+   if(!snapshot.exists())return;
+   const raw=snapshot.data().log;
+   if(typeof raw!=="string"||raw===lastCloudJSON)return;
+   try{applyingRemote=true;S=JSON.parse(raw);lastCloudJSON=raw;try{localStorage.setItem(LS,raw)}catch(e){}render();$("foot").textContent="Live sync updated."}
+   catch(e){console.error("Could not read cloud tracker data",e)}
+   finally{applyingRemote=false}
+  },err=>{$("foot").textContent="Cloud listener error. Local data is safe.";console.error(err)});
+  $("foot").textContent="Synced to your account. Live sync is on.";
+  authMessage("Logged in as "+(user.email||"your account")+". Use this same account on your other device.");
+ }catch(err){$("foot").textContent="Cloud connection failed. Check Firestore rules and internet.";authMessage(friendlyError(err));console.error(err)}
+});
+</script></body></html>
